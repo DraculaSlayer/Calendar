@@ -1,62 +1,69 @@
-import curses
 from curses import wrapper
+import curses
 import time
 
-def menu(stdscr):
+page = ["Notion", "Calendar", "Task"]
 
-    page = ["Notes", "calendar"]
+def input(keys: list, stdscr): 
 
-    posy = 4
-
-    for i in page:
-        stdscr.clear()
-        stdscr.addstr(posy, 2, i);
-        posy += 2
-
-    stdscr.refresh()
-
-
-def main(stdscr):
-
+def task(stdscr):
     stdscr.clear()
 
-    x = 5
+    stdscr.addstr(0, 0, "Add")
+    stdscr.refresh()
+
+    while True:
+
+        time.sleep(4)
+        break
+
+def menu(stdscr):
+    stdscr.clear()
+
+    posy = 2 
+
+    list_pos = []
+
+    for i in page:
+        stdscr.addstr(posy, 5, i)
+        posy += 2
+        list_pos.append(posy)
+    stdscr.refresh()
+
+    return list_pos
+
+def main(stdscr):
+    # Clear screen
+    stdscr.clear()
+
+    curses.cbreak()
+
     y = 0
 
-    running = True
+    k = ""
 
-    while running:
-        #   Draw
-        # --------
+    while True:
+        # Draw 
+        list_pos = menu(stdscr)
 
-        menu(stdscr)
-        stdscr.addstr(y, x, "X")
-        
-        # --------
+        # Update position cursor
+        stdscr.move(y, 4)
 
-        #Logic Main
+        # Read the keys 
         k = stdscr.getch()
 
         if k == 113:
-            stdscr.clear()
-            running = False
+            break
 
-        if k == 104:
-            if y == curses.LINES - 1:
-                pass
-            else:
-                y += 1
-        if k == 106:
-            if y == 0:
-                pass
-            else:
-                y -= 1
+        if k == 121:
+            for i in range(0, len(list_pos)):
+                if y+2 == list_pos[i]:
+                    if page[i] == page[2]:
+                        task(stdscr)
 
+        if k == 258:
+            y += 1
+        if k == 259:
+            y -= 1
 
-if __name__ == "__main__":
-    stdscr = curses.initscr()
-    stdscr.keypad(True)
-    curses.noecho()
-    curses.curs_set(0)
-
-    main(stdscr)
+wrapper(main)
