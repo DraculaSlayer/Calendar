@@ -1,69 +1,118 @@
 from curses import wrapper
 import curses
-import time
+import os
+import subprocess
+#import time
 
-page = ["Notion", "Calendar", "Task"]
+PATH_MAIN = "."
 
-def input(keys: list, stdscr): 
+#page = ["Notion", "Calendar", "Task"]
 
-def task(stdscr):
-    stdscr.clear()
+class Calendar:
 
-    stdscr.addstr(0, 0, "Add")
-    stdscr.refresh()
+    #// Loop Main // (Fuck you niggar)
+    def __init__(self):
+        self.key = ""
 
-    while True:
+        self.files = self.task_ToDo()
+        self.position = []
+        self.running = True
+        self.y = 0
+        self.stdscr = curses.initscr()
+        curses.cbreak()
+        curses.noecho()
+    
+    def new(self, stdscr):
+        while self.running:
+#            stdscr.clear()
+            stdscr.refresh()
+            
+            self.position = self.draw()
+            
+            stdscr.move(self.y, 4)
 
-        time.sleep(4)
-        break
+            self.handler_key()
 
-def menu(stdscr):
-    stdscr.clear()
+    #// Draw //
+    def draw(self):
 
-    posy = 2 
+        list_position = []
 
-    list_pos = []
+        y_str = -1
 
-    for i in page:
-        stdscr.addstr(posy, 5, i)
-        posy += 2
-        list_pos.append(posy)
-    stdscr.refresh()
+        for i in range(0, len(self.files)):
 
-    return list_pos
+            y_str += 2
 
-def main(stdscr):
-    # Clear screen
-    stdscr.clear()
+            list_position.append(y_str)
 
-    curses.cbreak()
+            self.stdscr.addstr(list_position[i], 5, self.files[i])
 
-    y = 0
+        return list_position
 
-    k = ""
+    
+    #// Logic //
+    def enter(self):
+        for i in range(len(self.position)):
+            if self.y == self.position[i]:
 
-    while True:
-        # Draw 
-        list_pos = menu(stdscr)
+                print(i)
+                #subprocess.Popen(["/usr/bin/bash", "vim", self.files[i]])
 
-        # Update position cursor
-        stdscr.move(y, 4)
+    def add(self):
+        print("MI MAMI")
 
-        # Read the keys 
-        k = stdscr.getch()
 
-        if k == 113:
-            break
+    #// Manager Keys // 
+    def handler_key(self):
 
-        if k == 121:
-            for i in range(0, len(list_pos)):
-                if y+2 == list_pos[i]:
-                    if page[i] == page[2]:
-                        task(stdscr)
+        self.key = self.stdscr.getch()
 
-        if k == 258:
-            y += 1
-        if k == 259:
-            y -= 1
+#        print(self.key)
 
-wrapper(main)
+        # Q
+        if self.key == 113:
+            self.running = False
+
+        # Key Arrows (move curso)
+        if self.key == 258:
+            if self.y >= curses.LINES - 1:
+               pass
+            else:
+                self.y += 1
+
+        if self.key == 259:
+            if self.y <= 0:
+                pass
+            else:
+                self.y -= 1
+        
+        # Enter
+        if self.key == 10:
+            self.enter()
+
+        # Add
+        if self.key == 141:
+            self.add()
+
+    #// Logic from the files //
+    def task_ToDo(self):
+        directory = os.listdir(PATH_MAIN)
+
+        if "todo.txt" in directory:
+            with open(f"{PATH_MAIN}/todo.txt", "r") as f:
+                for i in f.readlines():
+                    match i[0:3]:
+                        case "(A)":
+                            print("holis"),
+                        case "(B)":
+                            print("siloh"),
+                        case _:
+                            pass
+
+        return directory
+
+if __name__ == "__main__":
+    gg = Calendar()
+    wrapper(gg.new)
+
