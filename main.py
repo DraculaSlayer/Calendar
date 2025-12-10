@@ -14,7 +14,7 @@ class Calendar:
     def __init__(self):
         self.key = ""
 
-        self.files = self.task_ToDo()
+        self.buffer = self.task_ToDo()
         self.position = []
         self.running = True
         self.y = 0
@@ -24,7 +24,7 @@ class Calendar:
     
     def new(self, stdscr):
         while self.running:
-#            stdscr.clear()
+            stdscr.clear()
             stdscr.refresh()
             
             self.position = self.draw()
@@ -38,31 +38,70 @@ class Calendar:
 
         list_position = []
 
-        y_str = -1
+        y_str = 0
 
-        for i in range(0, len(self.files)):
+        self.stdscr.addstr(0, 5, "a: Add        d: Delete        x: Completed")
+
+        for i in range(0, len(self.buffer)):
 
             y_str += 2
 
             list_position.append(y_str)
 
-            self.stdscr.addstr(list_position[i], 5, self.files[i])
+            self.stdscr.addstr(list_position[i], 5, self.buffer[i])
 
         return list_position
-
     
     #// Logic //
-    def enter(self):
+    def completed(self):
         for i in range(len(self.position)):
             if self.y == self.position[i]:
+                complete = self.buffer[i]
+                tach = complete[0:3]
+                complete = complete.replace(tach, "x")
+                self.buffer[i] = complete 
 
-                print(i)
-                #subprocess.Popen(["/usr/bin/bash", "vim", self.files[i]])
+                self.change_file(f"{PATH_MAIN}/todo.txt")
+
+                self.buffer = self.task_ToDo()
 
     def add(self):
-        print("MI MAMI")
 
+        task = ""
+        position_cursor = 0
+        self.stdscr.move(curses.LINES-1, position_cursor)
 
+        list_keys = ["KEY_BACKSPACE"]
+
+        while True:       
+            INPUT = self.stdscr.getkey()
+
+            if INPUT == "\n":
+                self.buffer.append(task+"\n")
+                break
+           
+           
+            if INPUT in list_keys:
+                pass
+            else:
+                task = task + INPUT
+
+            self.stdscr.move(curses.LINES-1, position_cursor)
+            
+            self.stdscr.addstr(curses.LINES-1, 0, task)
+            self.stdscr.refresh()
+            
+            if INPUT == "KEY_BACKSPACE":
+                task = task[:-1]
+                position_cursor -= 1
+
+                self.stdscr.addch(curses.LINES-1, position_cursor, " ")
+                self.stdscr.refresh()
+           
+            position_cursor += 1
+
+        #self.buffer.append()
+    
     #// Manager Keys // 
     def handler_key(self):
 
@@ -75,24 +114,24 @@ class Calendar:
             self.running = False
 
         # Key Arrows (move curso)
-        if self.key == 258:
+        if self.key == 258 or self.key == 107:
             if self.y >= curses.LINES - 1:
                pass
             else:
                 self.y += 1
 
-        if self.key == 259:
+        if self.key == 259 or self.key == 106:
             if self.y <= 0:
                 pass
             else:
                 self.y -= 1
         
-        # Enter
-        if self.key == 10:
-            self.enter()
+        # Completed (x)
+        if self.key == 120:
+            self.completed()
 
-        # Add
-        if self.key == 141:
+        # Add (a)
+        if self.key == 97:
             self.add()
 
     #// Logic from the files //
@@ -101,18 +140,13 @@ class Calendar:
 
         if "todo.txt" in directory:
             with open(f"{PATH_MAIN}/todo.txt", "r") as f:
-                for i in f.readlines():
-                    match i[0:3]:
-                        case "(A)":
-                            print("holis"),
-                        case "(B)":
-                            print("siloh"),
-                        case _:
-                            pass
-
-        return directory
+                return f.readlines()
+    
+    def change_file(self, file):
+        with open(file, "w") as f:
+            for i in self.buffer:
+                f.writelines(i)
 
 if __name__ == "__main__":
     gg = Calendar()
     wrapper(gg.new)
-
