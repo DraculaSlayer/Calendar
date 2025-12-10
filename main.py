@@ -6,11 +6,9 @@ import subprocess
 
 PATH_MAIN = "."
 
-#page = ["Notion", "Calendar", "Task"]
-
 class Calendar:
 
-    #// Loop Main // (Fuck you niggar)
+    #// Loop Main // (Fuck me niggar)
     def __init__(self):
         self.key = ""
 
@@ -79,7 +77,12 @@ class Calendar:
             if INPUT == "\n":
                 self.buffer.append(task+"\n")
                 break
-           
+            if INPUT == "KEY_BACKSPACE":
+                task = task[:-1]
+                
+                for i in range(curses.COLS-1):
+                    self.stdscr.addch(curses.LINES-1, i, " ")
+                    self.stdscr.refresh()
            
             if INPUT in list_keys:
                 pass
@@ -90,17 +93,11 @@ class Calendar:
             
             self.stdscr.addstr(curses.LINES-1, 0, task)
             self.stdscr.refresh()
-            
-            if INPUT == "KEY_BACKSPACE":
-                task = task[:-1]
-                position_cursor -= 1
-
-                self.stdscr.addch(curses.LINES-1, position_cursor, " ")
-                self.stdscr.refresh()
-           
-            position_cursor += 1
-
-        #self.buffer.append()
+    
+    def delete(self):
+        for i in range(len(self.position)):
+            if self.y == self.position[i]:
+                self.buffer.pop(i)
     
     #// Manager Keys // 
     def handler_key(self):
@@ -133,6 +130,10 @@ class Calendar:
         # Add (a)
         if self.key == 97:
             self.add()
+
+        # Delete (d)
+        if self.key == 100:
+            self.delete()
 
     #// Logic from the files //
     def task_ToDo(self):
