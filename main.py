@@ -8,13 +8,15 @@ PATH_MAIN = "."
 
 class Calendar:
 
-    #// Loop Main // (Fuck me niggar)
+    #// Loop Main // 
     def __init__(self):
         self.key = ""
+        self.file = "todo.txt"
 
         self.buffer = self.task_ToDo()
         self.position = []
         self.running = True
+        self.index = 0
         self.y = 0
         self.stdscr = curses.initscr()
         curses.cbreak()
@@ -59,7 +61,7 @@ class Calendar:
                 complete = complete.replace(tach, "x")
                 self.buffer[i] = complete 
 
-                self.change_file(f"{PATH_MAIN}/todo.txt")
+                self.write_file()
 
                 self.buffer = self.task_ToDo()
 
@@ -93,11 +95,15 @@ class Calendar:
             
             self.stdscr.addstr(curses.LINES-1, 0, task)
             self.stdscr.refresh()
-    
+   
+        self.write_file()
+
     def delete(self):
         for i in range(len(self.position)):
             if self.y == self.position[i]:
                 self.buffer.pop(i)
+
+        self.write_file()
     
     #// Manager Keys // 
     def handler_key(self):
@@ -106,7 +112,7 @@ class Calendar:
 
 #        print(self.key)
 
-        # Q
+        # Quit (q)
         if self.key == 113:
             self.running = False
 
@@ -135,18 +141,34 @@ class Calendar:
         if self.key == 100:
             self.delete()
 
+        if self.key == 9:
+            self.change_files()
+
     #// Logic from the files //
     def task_ToDo(self):
-        directory = os.listdir(PATH_MAIN)
+        PATH = f"{PATH_MAIN}/{self.file}"
 
-        if "todo.txt" in directory:
-            with open(f"{PATH_MAIN}/todo.txt", "r") as f:
-                return f.readlines()
+        with open(PATH, "r") as f:
+            return f.readlines()
     
-    def change_file(self, file):
-        with open(file, "w") as f:
+    def write_file(self):
+        PATH = f"{PATH_MAIN}/{self.file}"
+
+        with open(f"{PATH_MAIN}/{self.file}", "w") as f:
             for i in self.buffer:
                 f.writelines(i)
+
+    def change_files(self):
+        archives = ["todo.txt", "task.txt"]
+
+        if self.index >= len(archives) - 1:
+            self.index = 0
+            self.file = archives[self.index]
+        else:
+            self.index += 1
+            self.file = archives[self.index]
+
+        self.buffer = self.task_ToDo()
 
 if __name__ == "__main__":
     gg = Calendar()
