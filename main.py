@@ -7,6 +7,9 @@ import time
 PATH_MAIN = "."
 PREFIX = os.getenv("PREFIX")
 
+if PREFIX == None:
+    PREFIX = "None"
+
 class Calendar:
 
     #// Loop Main // 
