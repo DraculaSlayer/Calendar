@@ -1,10 +1,12 @@
 from curses import wrapper
 import curses
 import os
+import sys
+import time
 import subprocess
-#import time
 
 PATH_MAIN = "."
+PREFIX = subprocess.run(["ls", "-l", "/dev/null"], capture_output=True, text=True)
 
 class Calendar:
 
@@ -32,6 +34,24 @@ class Calendar:
             stdscr.move(self.y, 4)
 
             self.handler_key()
+
+    #// Daemon //
+    def daemon(self):
+        self.file = "task.txt"
+        self.buffer = self.task_ToDo()
+
+        if "/data/" in PREFIX.stdout:
+            print("Holis")
+        else:
+            print("GG")
+
+        #time_array = time.localtime()
+        
+        for i in self.buffer:
+            year = i[6:10]
+            month = i[3:5]
+            day = i[0:2]
+
 
     #// Draw //
     def draw(self):
@@ -171,5 +191,11 @@ class Calendar:
         self.buffer = self.task_ToDo()
 
 if __name__ == "__main__":
+
+    arg = sys.argv
     gg = Calendar()
-    wrapper(gg.new)
+
+    if len(arg) > 1 and arg[1] == "-d":
+        gg.daemon()
+    else:
+        wrapper(gg.new)
