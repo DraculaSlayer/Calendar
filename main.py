@@ -37,6 +37,7 @@ class Calendar:
 
     #// Daemon //
     def daemon(self):
+        curses.endwin()
         self.file = "task.txt"
         self.buffer = self.task_ToDo()
 
