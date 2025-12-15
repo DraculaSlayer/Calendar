@@ -41,7 +41,7 @@ class Calendar:
         self.file = "task.txt"
         self.buffer = self.task_ToDo()
 
-        if "/data/" in PREFIX.stdout:
+        if "/data/" == PREFIX.stdout[0:4]:
             print("Holis")
         else:
             print("GG")
