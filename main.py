@@ -3,10 +3,9 @@ import curses
 import os
 import sys
 import time
-import subprocess
 
 PATH_MAIN = "."
-PREFIX = subprocess.run(["ls", "-l", "/dev/null"], capture_output=True, text=True)
+PREFIX = os.getenv("PREFIX")
 
 class Calendar:
 
@@ -40,12 +39,11 @@ class Calendar:
         curses.endwin()
         self.file = "task.txt"
         self.buffer = self.task_ToDo()
-
-        if "/data/" == PREFIX.stdout[0:4]:
+        
+        if "/data/" in PREFIX:
             print("Holis")
         else:
             print("GG")
-
         #time_array = time.localtime()
         
         for i in self.buffer:
