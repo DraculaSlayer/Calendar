@@ -7,6 +7,8 @@ import time
 PATH_MAIN = "."
 PREFIX = os.getenv("PREFIX")
 
+TIME_SLEEP = 3600
+
 if PREFIX == None:
     PREFIX = "None"
 
@@ -44,16 +46,30 @@ class Calendar:
         self.buffer = self.task_ToDo()
         
         if "/data/" in PREFIX:
-            print("Holis")
+            notification = "termux-notification"
         else:
-            print("GG")
-        #time_array = time.localtime()
+            notification = "notify-send"
         
-        for i in self.buffer:
-            year = i[6:10]
-            month = i[3:5]
-            day = i[0:2]
+        time_array = time.localtime()
+      
+        while True:
+            for i in self.buffer:
+                if i[0] == "x":
+                    year = 0
+                    month = 0
+                    day = 0
+                else:
+                    year = int(i[6:10])
+                    month = int(i[3:5])
+                    day = int(i[0:2])
 
+                if day != 0:
+                    differences = (day - time_array.tm_mday)
+
+                    if differences <= 5:
+                        os.system(f'{notification} "faltan {differences} para terminar tu tarea!!!"')
+            
+            time.sleep(TIME_SLEEP)
 
     #// Draw //
     def draw(self):
