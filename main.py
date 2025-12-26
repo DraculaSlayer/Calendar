@@ -78,7 +78,7 @@ class Calendar:
 
         y_str = 0
 
-        self.stdscr.addstr(0, 5, "a: Add        d: Delete        x: Completed")
+        self.stdscr.addstr(0, 5, f"a: Add        d: Delete        x: Completed   {self.file}")
 
         for i in range(0, len(self.buffer)):
 
@@ -109,15 +109,16 @@ class Calendar:
         position_cursor = 0
         self.stdscr.move(curses.LINES-1, position_cursor)
 
-        list_keys = ["KEY_BACKSPACE"]
+        list_keys = ["ć"]
 
         while True:       
-            INPUT = self.stdscr.getkey()
+            INPUT = self.stdscr.getch()
+            INPUT = chr(INPUT)
 
             if INPUT == "\n":
                 self.buffer.append(task+"\n")
                 break
-            if INPUT == "KEY_BACKSPACE":
+            if INPUT == "ć":
                 task = task[:-1]
                 
                 for i in range(curses.COLS-1):
