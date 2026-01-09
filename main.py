@@ -42,7 +42,7 @@ class Calendar:
     #// Daemon //
     def daemon(self):
         curses.endwin()
-        self.file = "task.txt"
+        self.file = "calendar.txt"
         self.buffer = self.task_ToDo()
         
         if "/data/" in PREFIX:
@@ -67,8 +67,25 @@ class Calendar:
                     differences = (day - time_array.tm_mday)
 
                     if differences <= 5:
+                        os.system(f'{notification} "faltan {differences} para terminar tu compromiso!!!"')
+
+            self.file = "task.txt"
+            self.buffer = self.task_ToDo()
+
+            for i in self.buffer:
+                if i[0] == "x":
+                    hour = 0
+                    minute = 0
+                else:
+                    hour = int(i[0:2])
+                    minute = int(i[3:5])
+
+                if hour != 0:
+                    differences = (hour - time_array.tm_hour)
+
+                    if differences <= 5:
                         os.system(f'{notification} "faltan {differences} para terminar tu tarea!!!"')
-            
+
             time.sleep(TIME_SLEEP)
 
     #// Draw //
@@ -198,7 +215,7 @@ class Calendar:
                 f.writelines(i)
 
     def change_files(self):
-        archives = ["todo.txt", "task.txt"]
+        archives = ["todo.txt", "task.txt", "calendar.txt"]
 
         if self.index >= len(archives) - 1:
             self.index = 0
