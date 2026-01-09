@@ -1,10 +1,12 @@
+#!/bin/python3
+
 from curses import wrapper
 import curses
 import os
 import sys
 import time
 
-PATH_MAIN = "."
+PATH_MAIN = "/home/dr4cu/.me/"
 PREFIX = os.getenv("PREFIX")
 
 TIME_SLEEP = 3600
@@ -24,11 +26,12 @@ class Calendar:
         self.running = True
         self.index = 0
         self.y = 0
+   
+    def new(self, stdscr):
         self.stdscr = curses.initscr()
         curses.cbreak()
         curses.noecho()
-    
-    def new(self, stdscr):
+        
         while self.running:
             stdscr.clear()
             stdscr.refresh()
@@ -41,7 +44,6 @@ class Calendar:
 
     #// Daemon //
     def daemon(self):
-        curses.endwin()
         self.file = "calendar.txt"
         self.buffer = self.task_ToDo()
         

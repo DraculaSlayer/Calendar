@@ -1,0 +1,10 @@
+[Unit]
+Description=Service from the my calendar
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/dr4cu/.local/bin/calendar -d
+
+[Install]
+WantedBy=default.target
