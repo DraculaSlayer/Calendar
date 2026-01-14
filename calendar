@@ -6,10 +6,10 @@ import os
 import sys
 import time
 
-PATH_MAIN = "/home/dr4cu/.me/"
+PATH_MAIN = ""
 PREFIX = os.getenv("PREFIX")
 
-TIME_SLEEP = 3600
+TIME_SLEEP = 1200
 
 if PREFIX == None:
     PREFIX = "None"
@@ -44,9 +44,6 @@ class Calendar:
 
     #// Daemon //
     def daemon(self):
-        self.file = "calendar.txt"
-        self.buffer = self.task_ToDo()
-        
         if "/data/" in PREFIX:
             notification = "termux-notification"
         else:
@@ -55,6 +52,9 @@ class Calendar:
         time_array = time.localtime()
       
         while True:
+            self.file = "calendar.txt"
+            self.buffer = self.task_ToDo()
+
             for i in self.buffer:
                 if i[0] == "x":
                     year = 0
@@ -71,9 +71,24 @@ class Calendar:
                     if differences <= 5:
                         os.system(f'{notification} "faltan {differences} para terminar tu compromiso!!!"')
 
-            self.file = "task.txt"
+            self.file = "todo.txt"
             self.buffer = self.task_ToDo()
 
+            for i in self.buffer:
+                if i[1] == "A":
+                  hour = 1
+                if i[1] == "B":
+                  hour = 5
+                if i[1] == "C":
+                  hour = 10
+
+                if hour != 0:
+                  differences = (hour - time_array.tm_hour)
+
+                  if differences <= 5:
+                    os.system(f'{notification} "{i}"')
+
+            """
             for i in self.buffer:
                 if i[0] == "x":
                     hour = 0
@@ -83,10 +98,11 @@ class Calendar:
                     minute = int(i[3:5])
 
                 if hour != 0:
-                    differences = (hour - time_array.tm_hour)
+                    differences = (time_array.tm_hour - hour)
 
                     if differences <= 5:
                         os.system(f'{notification} "faltan {differences} para terminar tu tarea!!!"')
+            """
 
             time.sleep(TIME_SLEEP)
 
